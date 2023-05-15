@@ -1,5 +1,5 @@
 /*!
-	Copyright (c) 2018 Jed Watson.
+	Copyright (c) 2018 Rahima.
 	Licensed under the MIT License (MIT), see
 	http://jedwatson.github.io/classnames
 */
@@ -76,3 +76,5 @@
  *
  * @license MIT
  */
+
+ All right reserved by Hasanov Amir from Ganja (￣y▽￣)╭ Ohohoho.....

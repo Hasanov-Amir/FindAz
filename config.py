@@ -11,6 +11,7 @@ PROJECT_NAME = "FindAz"
 
 # path to media
 MEDIA_PATH = os.path.join(os.getcwd(), 'app', 'media')
+MEDIA_FILE_SIZE = 1048600  # in bytes 1048600 ≈ 1 megabyte
 
 if not os.path.isdir(MEDIA_PATH):
     os.mkdir(MEDIA_PATH)

@@ -20,7 +20,7 @@ class GetMedia(MethodView):
     def get(self, file):
         path = os.path.join(MEDIA_PATH, file)
         try:
-            return send_file(path)
+            return send_file(path), 200
         except FileNotFoundError:
             error = "No such file"
             return {"error": error}, 404
