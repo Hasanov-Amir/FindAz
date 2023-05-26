@@ -1,6 +1,6 @@
 venv/
 .env
-app/media/
+media/
 __pycache__/
 *.py[cod]
 .idea/

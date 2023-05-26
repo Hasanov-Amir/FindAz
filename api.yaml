@@ -1,0 +1,31 @@
+openapi: 3.0.0
+
+info:
+  title: FindAz
+  version: "1.0"
+  description: FindAz marketplace
+
+paths:
+  /api/items:
+    get:
+      operationId: app.items.controller.get_items
+      responses:
+        200:
+          description: Returns list of product
+    post:
+      operationId: app.items.controller.post_item
+      responses:
+        201:
+          description: Returns product id
+
+  /api/items/{item_id}:
+    get:
+      operationId: app.items.controller.get_item
+      responses:
+        200:
+          description: Returns one product
+    put:
+      operationId: app.items.controller.put_image_to_item
+      responses:
+        200:
+          description: Returns added images url

@@ -1,8 +1,5 @@
 import os
-from pathlib import Path
 from dotenv import load_dotenv
-
-BASE_DIR = Path(__file__).parent
 
 load_dotenv()
 
@@ -10,9 +7,10 @@ load_dotenv()
 PROJECT_NAME = "FindAz"
 
 # path to media
-MEDIA_PATH = os.path.join(os.getcwd(), 'app', 'media')
+MEDIA_PATH = os.path.join(os.getcwd(), 'media')
 MEDIA_FILE_SIZE = 1_048_600  # in bytes 1048600 ≈ 1 megabyte
 MAX_FILES_COUNT = 6  # including main file
+ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
 if not os.path.isdir(MEDIA_PATH):
     os.mkdir(MEDIA_PATH)

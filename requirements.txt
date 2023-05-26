@@ -1,5 +1,8 @@
-Flask~=2.3.2
 pymongo~=4.3.3
-Werkzeug~=2.3.4
 python-dotenv~=1.0.0
 Flask-Cors==3.0.10
+connexion[swagger-ui]==2.14.2
+beanie==1.19.2
+motor~=3.1.2
+pydantic~=1.10.8
+argparse~=1.4.0
