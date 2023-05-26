@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 app = FlaskApp(__name__)
 app.add_api("api.yaml")
-# CORS(app, resources={r"/api/": {"origins": "*"}})
+CORS(app.app, resources={r"/": {"origins": "*"}})
 
 if __name__ == "__main__":
     app.run(host=args.host, port=args.port, debug=args.debug)
