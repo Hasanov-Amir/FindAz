@@ -29,3 +29,10 @@ paths:
       responses:
         200:
           description: Returns added images url
+
+  /{file}:
+    get:
+      operationId: app.items.controller.get_image
+      responses:
+        200:
+          description: Returns image

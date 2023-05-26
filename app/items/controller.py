@@ -1,9 +1,10 @@
+import os
 import uuid
 from datetime import datetime
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from flask import request
+from flask import request, send_file
 from werkzeug.utils import secure_filename
 
 from .model import findaz_db
@@ -83,3 +84,12 @@ def put_image_to_item(item_id):
             return {"error": error}, 400
 
     return added_files, 200
+
+
+def get_image(file):
+    path = os.path.join(MEDIA_PATH, file)
+    try:
+        return send_file(path), 200
+    except FileNotFoundError:
+        error = "No such file"
+        return {"error": error}, 404
