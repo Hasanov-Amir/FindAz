@@ -5,10 +5,11 @@ from flask.views import MethodView
 from flask import request
 from werkzeug.utils import secure_filename
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from app.extensions import findaz_db
 from .utils import check_file_size
-from config import MEDIA_PATH, MEDIA_FILE_SIZE
+from config import MEDIA_PATH, MEDIA_FILE_SIZE, MAX_FILES_COUNT
 
 
 class Items(MethodView):
@@ -49,13 +50,17 @@ class UploadItemPhoto(MethodView):
 
         try:
             item = self.model.find_one({"_id": ObjectId(item_id)})
-        except Exception as e:
-            error = f"Invalid item id.\nDetailed: {e}"
+        except InvalidId:
+            error = f"Invalid item id."
             return {"error": error}, 400
 
         if not item:
             error = "No item with this id"
             return {"error": error}, 404
+
+        if len(files) > MAX_FILES_COUNT:
+            error = f"Too many files for item"
+            return {"error": error}, 400
 
         if "main_file" not in names_ls:
             error = "main_file field is required"
