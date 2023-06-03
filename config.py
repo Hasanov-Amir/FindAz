@@ -20,8 +20,18 @@ DEBUG = False
 HOST = "0.0.0.0"
 PORT = 8080
 
-# database settings
+# old database settings
 MONGO_URI = "mongodb+srv://{user}:{password}@findazdb.jf7zxaw.mongodb.net/?retryWrites=true&w=majority"
 MONGO_USER = os.getenv("MONGO_USER")
 MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 MONGO_URL = MONGO_URI.format(user=MONGO_USER, password=MONGO_PASSWORD)
+
+
+# database settings
+POSTGRESQL_URI = "postgress://{username}:{password}@{host}:{port}/{database}?sslmode=prefer&connect_timeout=10".format(
+    database="findaz",
+    host="localhost",
+    port="5432",
+    username=os.getenv("POSTGRESQL_USERNAME"),
+    password=os.getenv("POSTGRESQL_PASSWORD")
+)

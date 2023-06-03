@@ -5,6 +5,9 @@ info:
   version: "1.0"
   description: FindAz marketplace
 
+servers:
+  - url: http://127.0.0.1:8080
+
 paths:
   /api/items:
     get:
@@ -12,6 +15,14 @@ paths:
       responses:
         200:
           description: Returns list of product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+
     post:
       operationId: app.items.controller.post_item
       responses:
@@ -36,3 +47,39 @@ paths:
       responses:
         200:
           description: Returns image
+
+components:
+  schemas:
+    getItemsSchema:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              image_url:
+                type: string
+              title:
+                type: string
+              time_added:
+                type: string
+              image0_url:
+                type: string
+              image1_url:
+                type: string
+              image2_url:
+                type: string
+              main_file_url:
+                type: string
+            required:
+              - _id
+              - title
+              - image_url
+              - time_added
+              - main_file_url
+      additionalProperties: false
+      required:
+        - items
