@@ -1,0 +1,205 @@
+openapi: 3.0.2
+
+info:
+  title: Sample
+  version: "1.0"
+  description: Sample for future projects
+
+servers:
+  - url: http://127.0.0.1:8080
+
+paths:
+  /product/{id}:
+    delete:
+      operationId: "app.controllers.product.controller.delete_product"
+      responses:
+        204:
+          description: No Content
+    get:
+      operationId: "app.controllers.product.controller.get_product"
+      parameters:
+        - name: id
+          in: path
+          description: product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        200:
+          description: info about product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  create_date:
+                    type: string
+                    format: date-time
+                  edit_date:
+                    type: string
+                    format: date-time
+                  product_title:
+                    type: string
+                  product_owner:
+                    type: string
+                  product_count:
+                    type: integer
+                  product_properties:
+                    type: object
+                    additionalProperties: true
+    
+    put:
+      operationId: "app.controllers.product.controller.change_product"
+      parameters:
+        - name: id
+          in: path
+          description: product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                create_date:
+                  type: string
+                  format: date-time
+                edit_date:
+                  type: string
+                  format: date-time
+                product_title:
+                  type: string
+                product_owner:
+                  type: string
+                product_count:
+                  type: integer
+                product_properties:
+                  type: object
+                  additionalProperties: true
+      responses:
+        200:
+          description: update info about product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  create_date:
+                    type: string
+                    format: date-time
+                  edit_date:
+                    type: string
+                    format: date-time
+                  product_title:
+                    type: string
+                  product_owner:
+                    type: string
+                  product_count:
+                    type: integer
+                  product_properties:
+                    type: object
+                    additionalProperties: true
+                  
+  /product:
+    get:
+      operationId: "app.controllers.product.controller.get_products"
+      parameters:
+        - in: query
+          name: product_title
+          schema:
+            type: string
+        - in: query
+          name: product_owner
+          schema:
+            type: string
+        - in: query
+          name: product_count
+          schema:
+            type: integer
+      responses:
+        200:
+          description: info about products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  create_date:
+                    type: string
+                    format: date-time
+                  edit_date:
+                    type: string
+                    format: date-time
+                  product_title:
+                    type: string
+                  product_owner:
+                    type: string
+                  product_count:
+                    type: integer
+                  product_properties:
+                    type: object
+                    additionalProperties: true
+
+    post:
+      operationId: "app.controllers.product.controller.add_product"
+      requestBody:
+        description: add new product
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_title:
+                  type: string
+                product_owner:
+                  type: string
+                product_count:
+                  type: integer
+                product_properties:
+                  type: object
+                  additionalProperties: true
+                    
+      responses:
+        201:
+          description: new product was added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  create_date:
+                    type: string
+                    format: date-time
+                  edit_date:
+                    type: string
+                    format: date-time
+                  product_title:
+                    type: string
+                  product_owner:
+                    type: string
+                  product_count:
+                    type: integer
+                  product_properties:
+                    type: object
+                    additionalProperties: true
+        

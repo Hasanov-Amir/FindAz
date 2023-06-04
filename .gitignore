@@ -1,6 +1,4 @@
-venv/
+.venv/
 .env
-media/
+logs/
 __pycache__/
-*.py[cod]
-.idea/
