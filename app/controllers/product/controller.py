@@ -1,5 +1,5 @@
 import uuid
-from flask import make_response, request
+from flask import request
 from marshmallow import ValidationError
 
 from app.data.models import Product
@@ -83,6 +83,5 @@ def delete_product(id):
         return {"error": "Product not found"}, 404
     
     product.delete()
-    response = make_response()
-    response.status_code = 204
-    return response
+
+    return {}, 204

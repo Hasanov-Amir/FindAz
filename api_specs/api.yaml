@@ -1,17 +1,61 @@
 openapi: 3.0.2
 
 info:
-  title: Sample
+  title: FindAz
   version: "1.2"
-  description: Sample for future projects
+  description: just for fun marketplace like yandex market, aliexpress and etc
+
+tags:
+  - name: Products
+    description: Products endpoints
+  - name: Product Images
+    description: Endpoint for Images
 
 servers:
   - url: http://127.0.0.1:8080
+    description: local server only for development
 
 paths:
-  /product/{id}:
+  /{file}:
+    get:
+      operationId: "app.controllers.get_image"
+      tags:
+        - Product Images
+      summary: get Image by filename
+      parameters:
+        - name: file
+          in: path
+          description: filename of image
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: returns image file
+          content:
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+
+  /api/product/{id}:
     delete:
       operationId: "app.controllers.product.controller.delete_product"
+      tags:
+        - Products
+      summary: Delete product by id
       parameters:
         - name: id
           in: path
@@ -25,6 +69,9 @@ paths:
           description: No Content
     get:
       operationId: "app.controllers.product.controller.get_product"
+      tags:
+        - Products
+      summary: Get product by id
       parameters:
         - name: id
           in: path
@@ -39,29 +86,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  create_date:
-                    type: string
-                    format: date-time
-                  edit_date:
-                    type: string
-                    format: date-time
-                  product_title:
-                    type: string
-                  product_owner:
-                    type: string
-                  product_count:
-                    type: integer
-                  product_properties:
-                    type: object
-                    additionalProperties: true
+                $ref: '#/components/schemas/productResponseSchema'
     
     put:
       operationId: "app.controllers.product.controller.change_product"
+      tags:
+        - Products
+      summary: Change product by id
       parameters:
         - name: id
           in: path
@@ -74,56 +105,21 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                create_date:
-                  type: string
-                  format: date-time
-                edit_date:
-                  type: string
-                  format: date-time
-                product_title:
-                  type: string
-                product_owner:
-                  type: string
-                product_count:
-                  type: integer
-                product_properties:
-                  type: object
-                  additionalProperties: true
+              $ref: '#/components/schemas/productRequestBodySchema'
       responses:
         200:
           description: update info about product
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  create_date:
-                    type: string
-                    format: date-time
-                  edit_date:
-                    type: string
-                    format: date-time
-                  product_title:
-                    type: string
-                  product_owner:
-                    type: string
-                  product_count:
-                    type: integer
-                  product_properties:
-                    type: object
-                    additionalProperties: true
+                $ref: '#/components/schemas/productResponseSchema'
                   
-  /product:
+  /api/product:
     get:
       operationId: "app.controllers.product.controller.get_products"
+      tags:
+        - Products
+      summary: Get list of products
       parameters:
         - in: query
           name: product_title
@@ -143,46 +139,22 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  create_date:
-                    type: string
-                    format: date-time
-                  edit_date:
-                    type: string
-                    format: date-time
-                  product_title:
-                    type: string
-                  product_owner:
-                    type: string
-                  product_count:
-                    type: integer
-                  product_properties:
-                    type: object
-                    additionalProperties: true
+                type: array
+                items:
+                  $ref: '#/components/schemas/productResponseSchema'
 
     post:
       operationId: "app.controllers.product.controller.add_product"
+      tags:
+        - Products
+      summary: Add new product
       requestBody:
         description: add new product
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                product_title:
-                  type: string
-                product_owner:
-                  type: string
-                product_count:
-                  type: integer
-                product_properties:
-                  type: object
-                  additionalProperties: true
+              $ref: '#/components/schemas/productRequestBodySchema'
                     
       responses:
         201:
@@ -190,24 +162,41 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  create_date:
-                    type: string
-                    format: date-time
-                  edit_date:
-                    type: string
-                    format: date-time
-                  product_title:
-                    type: string
-                  product_owner:
-                    type: string
-                  product_count:
-                    type: integer
-                  product_properties:
-                    type: object
-                    additionalProperties: true
-        
+                $ref: '#/components/schemas/productResponseSchema'
+
+components:
+  schemas:
+    productResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        create_date:
+          type: string
+          format: date-time
+        edit_date:
+          type: string
+          format: date-time
+        product_title:
+          type: string
+        product_owner:
+          type: string
+        product_count:
+          type: integer
+        product_properties:
+          type: object
+          additionalProperties: true
+
+    productRequestBodySchema:
+      type: object
+      properties:
+        product_title:
+          type: string
+        product_owner:
+          type: string
+        product_count:
+          type: integer
+        product_properties:
+          type: object
+          additionalProperties: true
