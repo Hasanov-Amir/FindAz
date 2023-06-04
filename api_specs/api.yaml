@@ -2,7 +2,7 @@ openapi: 3.0.2
 
 info:
   title: Sample
-  version: "1.0"
+  version: "1.2"
   description: Sample for future projects
 
 servers:
@@ -12,6 +12,14 @@ paths:
   /product/{id}:
     delete:
       operationId: "app.controllers.product.controller.delete_product"
+      parameters:
+        - name: id
+          in: path
+          description: product id
+          schema:
+            type: string
+            format: uuid
+          required: true
       responses:
         204:
           description: No Content
