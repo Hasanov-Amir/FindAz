@@ -5,7 +5,6 @@ from flask import send_file, current_app
 
 def get_image(file):
     path = os.path.join(current_app.config["MEDIA_PATH"], file)
-    print(path)
 
     try:
         return send_file(path), 200
