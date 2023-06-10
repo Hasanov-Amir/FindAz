@@ -113,7 +113,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/productResponseSchema'
-                  
+  
+  /api/product/{id}/images:
+    put:
+      operationId: "app.controllers.product.controller.change_product_images"
+      tags:
+        - Products
+      summary: Set or change product images
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+      
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/productImagesSchema"
+                
+      responses:
+        200:
+          description: returns josn with images url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    $ref: "#/components/schemas/productImagesSchema"
+
   /api/product:
     get:
       operationId: "app.controllers.product.controller.get_products"
@@ -200,3 +231,42 @@ components:
         product_properties:
           type: object
           additionalProperties: true
+    
+    productImagesSchema:
+      type: object
+      properties:
+        main_image:
+          type: string
+          format: binary
+        image_1:
+          type: string
+          format: binary
+        image_2:
+          type: string
+          format: binary
+        image_3:
+          type: string
+          format: binary
+        image_4:
+          type: string
+          format: binary
+        image_5:
+          type: string
+          format: binary
+        image_6:
+          type: string
+          format: binary
+        image_7:
+          type: string
+          format: binary
+        image_8:
+          type: string
+          format: binary
+        image_9:
+          type: string
+          format: binary
+        image_10:
+          type: string
+          format: binary
+      required:
+        - "main_image"

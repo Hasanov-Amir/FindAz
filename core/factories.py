@@ -1,6 +1,5 @@
 import sys
 import logging
-from logging.handlers import RotatingFileHandler
 from os import path
 
 from flask import jsonify

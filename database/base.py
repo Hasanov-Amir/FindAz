@@ -49,7 +49,7 @@ class Model(db.Model, CRUDMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     create_date = Column("create_date", TIMESTAMP, default=func.now())
     edit_date = Column("edit_date", TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp())
-    
+
     @classmethod
     def exists(cls, ent_id):
         result = cls.query.get(ent_id)

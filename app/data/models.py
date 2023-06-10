@@ -11,6 +11,7 @@ class Product(Model):
     product_owner = Column("owner", String(50))
     product_count = Column("count", Integer())
     product_properties = Column("properties", JSON)
+    product_images = Column("images", JSON)
 
     def __str__(self):
         return f"{self.id} : {self.product_title}"
