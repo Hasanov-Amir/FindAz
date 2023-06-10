@@ -1,7 +1,6 @@
-from marshmallow import ValidationError, fields
-from flask import current_app
+from marshmallow import fields
+from app.utils.field_types import FileType
 
-from app.utils.helpers import allowed_extension
 from core.extensions import ma
 
 
@@ -23,21 +22,6 @@ class ProductSerializer(ma.Schema):
             self.fields['product_owner'].required = False
             self.fields['product_count'].required = False
             self.fields['product_properties'].required = False
-
-
-class FileType(fields.Field):
-    def _deserialize(self, value, attr, data, **kwargs):
-        filename = value.filename
-
-        if not filename:
-            error = 'No file selected for uploading.'
-            raise ValidationError(error)
-
-        if not allowed_extension(filename):
-            error = f'Allowed file types are {current_app.config["IMAGE_ALLOWED_EXTENSIONS"]}.'
-            raise ValidationError(error)
-
-        return value
 
 
 class ProductImagesSerializer(ma.Schema):

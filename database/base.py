@@ -12,9 +12,6 @@ Column = db.Column
 class CRUDMixin:
     @classmethod
     def create(cls, **kwargs):
-        if not kwargs.get("id"):
-            unique_id = uuid.uuid4()
-            kwargs["id"] = unique_id
         instance = cls(**kwargs)
         return instance.save()
     

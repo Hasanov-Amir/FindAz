@@ -7,9 +7,11 @@ info:
 
 tags:
   - name: Products
-    description: Products endpoints
+    description: Endpoints for Products
   - name: Product Images
     description: Endpoint for Images
+  - name: User
+    description: Endpoint for Users
 
 servers:
   - url: http://127.0.0.1:8080
@@ -220,8 +222,97 @@ paths:
               schema:
                 $ref: '#/components/schemas/productResponseSchema'
 
+  /api/user:
+    post:
+      operationId: "app.controllers.user.controller.create_user"
+      tags:
+        - "User"
+      summary: Create new user
+
+      requestBody:
+        description: add new user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userCreateSchema'
+
+      responses:
+        201:
+          description: User was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userGetSchema'
+
+  /api/user/me:
+    get:
+      operationId: "app.controllers.user.controller.get_me"
+      tags:
+        - "User"
+      summary: Get info about logged in user
+
+      responses:
+        200:
+          description: get info about user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userGetSchema'
+
 components:
   schemas:
+    userCreateSchema:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        password:
+          type: string
+      required:
+        - "username"
+        - "email"
+        - "password"
+
+    userGetSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        create_date:
+          type: string
+          format: date-time
+        edit_date:
+          type: string
+          format: date-time
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        profile_photo:
+          type: string
+
     productResponseSchema:
       type: object
       properties:
