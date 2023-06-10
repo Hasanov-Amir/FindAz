@@ -41,7 +41,7 @@ class FileType(fields.Field):
 
 
 class ProductImagesSerializer(ma.Schema):
-    main_image = FileType(required=True)
+    main_image = FileType(required=False)
     image_1 = FileType(required=False)
     image_2 = FileType(required=False)
     image_3 = FileType(required=False)

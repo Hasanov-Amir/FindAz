@@ -1,6 +1,8 @@
+import os
 import uuid
 
 from flask import request, current_app
+from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
@@ -103,12 +105,15 @@ def change_product_images(id):
 
         images[key] = filename
 
-    product.update(product_images=images)
+    p_images = product.product_images or {}
+    p_images.update(images)
+    flag_modified(product, "product_images") # никто не знает почему но это работает
+    product.update(product_images=p_images)
 
     return images, 200
 
 
-def delete_product(id):
+def delete_product_images(id, field):
     try:
         product_id = uuid.UUID(id)
     except ValueError:
@@ -119,6 +124,36 @@ def delete_product(id):
     if not product:
         return {"error": "Product not found"}, 404
     
+    product_images = product.product_images
+    
+    if not product_images:
+        return {"error": "Product does not have product_images field."}, 400
+    
+    image_filename = product_images.get(field, False)
+
+    if not image_filename:
+        return {"error": f"product_images field doe not have {field} field."}
+
+    product_images.pop(field)
+    flag_modified(product, "product_images")
+    product.save()
+    
+    os.remove(f"{current_app.config['MEDIA_PATH']}\\{image_filename}")
+
+    return {}, 204
+
+
+def delete_product(id):
+    try:
+        product_id = uuid.UUID(id)
+    except ValueError:
+        return {"error": "Invalid id"}, 400
+
+    product = Product.get(product_id)
+
+    if not product:
+        return {"error": "Product not found"}, 404
+
     product.delete()
 
     return {}, 204

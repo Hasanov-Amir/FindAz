@@ -120,6 +120,7 @@ paths:
       tags:
         - Products
       summary: Set or change product images
+
       parameters:
         - name: id
           in: path
@@ -144,6 +145,30 @@ paths:
                 properties:
                   images:
                     $ref: "#/components/schemas/productImagesSchema"
+
+  /api/product/{id}/images/{field}:
+    delete:
+      operationId: "app.controllers.product.controller.delete_product_images"
+      tags:
+        - "Products"
+      summary: Delete product images
+
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: field
+          in: path
+          schema:
+            type: string
+          required: true
+        
+      responses:
+        204:
+          description: No Content
 
   /api/product:
     get:
@@ -268,5 +293,3 @@ components:
         image_10:
           type: string
           format: binary
-      required:
-        - "main_image"
