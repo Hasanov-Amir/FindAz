@@ -41,7 +41,7 @@ class User(Model):
 
     def check_password(self, raw_password):
         hash_password = create_hash(raw_password)
-        if self.group_password == hash_password:
+        if self.password == hash_password:
             return True
         return False
 
@@ -50,3 +50,12 @@ class User(Model):
     
     def __repr__(self):
         return f"{self.id} : {self.email}"
+
+
+class TokenBlackList(Model):
+
+    def __str__(self):
+        return f"id = {self.id}"
+    
+    def __repr__(self):
+        return f"id = {self.id}"

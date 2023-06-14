@@ -88,8 +88,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/productResponseSchema'
-    
+                $ref: "#/components/schemas/productResponseSchema"
+
     put:
       operationId: "app.controllers.product.controller.change_product"
       tags:
@@ -107,15 +107,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/productRequestBodySchema'
+              $ref: "#/components/schemas/productRequestBodySchema"
       responses:
         200:
           description: update info about product
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/productResponseSchema'
-  
+                $ref: "#/components/schemas/productResponseSchema"
+
   /api/product/{id}/images:
     put:
       operationId: "app.controllers.product.controller.change_product_images"
@@ -130,13 +130,13 @@ paths:
             type: string
             format: uuid
           required: true
-      
+
       requestBody:
         content:
           multipart/form-data:
             schema:
               $ref: "#/components/schemas/productImagesSchema"
-                
+
       responses:
         200:
           description: returns josn with images url
@@ -167,7 +167,7 @@ paths:
           schema:
             type: string
           required: true
-        
+
       responses:
         204:
           description: No Content
@@ -199,7 +199,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/productResponseSchema'
+                  $ref: "#/components/schemas/productResponseSchema"
 
     post:
       operationId: "app.controllers.product.controller.add_product"
@@ -212,17 +212,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/productRequestBodySchema'
-                    
+              $ref: "#/components/schemas/productRequestBodySchema"
+
       responses:
         201:
           description: new product was added
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/productResponseSchema'
+                $ref: "#/components/schemas/productResponseSchema"
 
-  /api/user:
+  /api/user/create:
     post:
       operationId: "app.controllers.user.controller.create_user"
       tags:
@@ -235,7 +235,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userCreateSchema'
+              $ref: "#/components/schemas/userCreateSchema"
 
       responses:
         201:
@@ -243,14 +243,49 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userGetSchema'
+                $ref: "#/components/schemas/userGetSchema"
+
+  /api/user/login:
+    post:
+      operationId: "app.controllers.user.controller.login_user"
+      tags:
+        - "User"
+      summary: Login user by email and password
+
+      requestBody:
+        description: login by email and password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - "email"
+                - "password"
+
+      responses:
+        200:
+          description: returns tokens
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokensSchema"
 
   /api/user/me:
     get:
-      operationId: "app.controllers.user.controller.get_me"
+      operationId: "app.controllers.user.controller.get_user"
       tags:
         - "User"
       summary: Get info about logged in user
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
 
       responses:
         200:
@@ -258,10 +293,59 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userGetSchema'
+                $ref: "#/components/schemas/userGetSchema"
+
+  /api/user/token/refresh:
+    get:
+      operationId: "app.controllers.user.controller.refresh_access_token"
+      tags:
+        - "User"
+      summary: endpoint for refreshing access token
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        200:
+          description: get updated tokens
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokensSchema"
+
+  /api/user/logout:
+    get:
+      operationId: "app.controllers.user.controller.logout_user"
+      tags:
+        - "User"
+      summary: endpoint for logout
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        204:
+          description: No Content
 
 components:
+  parameters:
+    loginRequiredComponent:
+      name: Authorization
+      in: header
+      schema:
+        type: string
+      required: true
+      description: paremetre for private endpoints
+
   schemas:
+    tokensSchema:
+      type: object
+      properties:
+        access_token:
+          type: string
+        resfresh_token:
+          type: string
+
     userCreateSchema:
       type: object
       properties:
@@ -347,7 +431,7 @@ components:
         product_properties:
           type: object
           additionalProperties: true
-    
+
     productImagesSchema:
       type: object
       properties:

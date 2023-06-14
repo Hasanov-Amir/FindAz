@@ -16,3 +16,9 @@ class UserSerializer(ma.Schema):
     age = fields.Int(required=False)
     gender = fields.Str(required=False)
     profile_photo = fields.Str(dump_only=True)
+
+    def __init__(self, method=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        if method == "POST_LOGIN":
+            self.fields['username'].required = False
