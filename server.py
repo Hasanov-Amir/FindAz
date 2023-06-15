@@ -14,4 +14,10 @@ else:
 flask_app = create_app(settings_name)
 
 if __name__ == '__main__':
-    run_simple("0.0.0.0", 8080, flask_app, use_debugger=flask_app.config["DEBUG"])
+    run_simple(
+        "0.0.0.0",
+        8080,
+        flask_app,
+        use_reloader=False,
+        use_debugger=flask_app.config["DEBUG"]
+    )

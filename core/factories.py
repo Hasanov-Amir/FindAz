@@ -9,6 +9,7 @@ from flask.logging import default_handler
 
 from core.extensions import db, ma, migrator
 from app.data import models as _models
+from app.middlewares.auth import AuthMiddleware
 
 
 class SettingsError(Exception):
@@ -36,16 +37,12 @@ def register_extensions(app):
     ma.init_app(app)
     migrator.init_app(app)
 
-    return
-
 
 def register_api(app):
     app.add_api(
         'api.yaml',
         resolver=RestyResolver('app.controllers')
     )
-
-    return
 
 
 def register_logger(app):
@@ -64,20 +61,21 @@ def register_logger(app):
     app.logger.addHandler(handler)
     app.logger.removeHandler(default_handler)
 
-    return
-
 
 def register_error_handlers(app):
     def create_error_handler(status_code, message):
         def error_handler(error):
             return jsonify(message=message), status_code
-
         return error_handler
 
     app.register_error_handler(400, create_error_handler(400, "Bad request"))
     app.register_error_handler(401, create_error_handler(401, "Unathorized"))
     app.register_error_handler(403, create_error_handler(403, "Forbidden"))
     app.register_error_handler(404, create_error_handler(404, "Not found"))
+
+
+def register_middlewares(app):
+    app.wsgi_app = AuthMiddleware(app.wsgi_app)
 
 
 def create_app(config_name="default"):
@@ -88,12 +86,11 @@ def create_app(config_name="default"):
     )
 
     cnnx_app = FlaskApp(__name__, specification_dir=swagger_dir)
-
     flask_app = cnnx_app.app
-
     flask_app.config.from_object(config_obj)
     flask_app.app_context().push()
 
+    register_middlewares(flask_app)
     register_logger(flask_app)
     register_extensions(flask_app)
     register_error_handlers(flask_app)

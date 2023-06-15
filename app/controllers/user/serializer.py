@@ -22,3 +22,13 @@ class UserSerializer(ma.Schema):
         
         if method == "POST_LOGIN":
             self.fields['username'].required = False
+        
+        if method == "PUT":
+            self.fields['email'].required = False
+            self.fields['email'].dump_only = True
+
+
+class UserPasswordChangeSerializer(ma.Schema):
+    old_password = fields.Str(required=True)
+    new_password1 = PasswordType(required=True)
+    new_password2 = PasswordType(required=True)

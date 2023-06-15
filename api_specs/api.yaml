@@ -6,12 +6,12 @@ info:
   description: just for fun marketplace like yandex market, aliexpress and etc
 
 tags:
-  - name: Products
-    description: Endpoints for Products
-  - name: Product Images
-    description: Endpoint for Images
   - name: User
     description: Endpoint for Users
+  - name: Product
+    description: Endpoints for Products
+  - name: Image
+    description: Endpoint for Images
 
 servers:
   - url: http://127.0.0.1:8080
@@ -22,7 +22,7 @@ paths:
     get:
       operationId: "app.controllers.get_image"
       tags:
-        - Product Images
+        - Image
       summary: get Image by filename
       parameters:
         - name: file
@@ -326,6 +326,35 @@ paths:
       responses:
         204:
           description: No Content
+  
+  /api/user/change-password:
+    post:
+      operationId: "app.controllers.user.controller.change_password"
+      tags:
+        - "User"
+      summary: endpoint for changing password
+
+      parameters:
+        - $ref: '#/components/parameters/loginRequiredComponent'
+
+      requestBody:
+        description: new and old passwords
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                new_password1:
+                  type: string
+                new_password2:
+                  type: string
+      
+      responses:
+        204:
+          description: No content
 
 components:
   parameters:

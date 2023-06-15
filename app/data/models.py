@@ -1,8 +1,9 @@
 from sqlalchemy import String, Integer, SmallInteger
 from sqlalchemy.dialects.postgresql import JSON
-from app.utils.helpers import create_hash
 
 from database.base import Model, Column
+from app.utils.helpers import create_hash
+from app.exceptions.auth import InvalidPassword
 
 
 class Product(Model):
@@ -41,9 +42,9 @@ class User(Model):
 
     def check_password(self, raw_password):
         hash_password = create_hash(raw_password)
-        if self.password == hash_password:
-            return True
-        return False
+        if self.password != hash_password:
+            raise InvalidPassword("Invalid password")
+        return True
 
     def __str__(self):
         return f"{self.id} : {self.email}"
@@ -53,6 +54,7 @@ class User(Model):
 
 
 class TokenBlackList(Model):
+    __tablename__ = "token_black_list"
 
     def __str__(self):
         return f"id = {self.id}"

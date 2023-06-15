@@ -7,6 +7,7 @@ from flask import current_app
 from jwt.exceptions import ExpiredSignatureError, DecodeError
 
 from app.data.models import TokenBlackList, User
+from app.exceptions.auth import ExpiredToken, InvalidToken, InvalidTokenType
 
 
 def create_token(payload):
@@ -59,55 +60,46 @@ def create_tokens(payload):
             "id": payload.get("id")
         })
     }
-
     return tokens
 
 
-def token_is_valid(token, token_type='access'):
+def is_token_type_access(payload, default_type="access"):
+    token_type = payload.get('type')
+
+    if token_type != default_type:
+        raise InvalidTokenType(f"Invalid token type, {default_type} token is required.")
+    return True
+
+
+def token_is_valid(token, check_type=True, token_type='access'):
     current_time = datetime.now().timestamp()
 
     try:
         payload = decode_token(token)        
     except (ExpiredSignatureError, DecodeError):
-        return False
-    
-    if not payload.get('type') == token_type:
-        return False
-    
+        raise InvalidToken("Invalid token")
+
+    if check_type:
+        is_token_type_access(payload, default_type=token_type)
+
     user = User.get(payload.get('id'))
-    
+
     if not user:
-        return False
-    
+        raise InvalidToken("Invalid token")
+
     if 'exp' in payload and payload.get('exp') < current_time:
-        return False
-    
-    if is_token_in_blacklist(token):
-        return False 
+        raise ExpiredToken("Expired token")
 
+    is_token_in_blacklist(payload.get('token_id'))
     return True
 
 
-def get_payload(token):
-    payload = decode_token(token)
-
-    return payload
-
-
-def add_token_to_blacklist(refresh_token):
-    if not token_is_valid(refresh_token, token_type='refresh'):
-        return False
-    
-    payload = get_payload(refresh_token)
-    TokenBlackList.create(id=payload.get('token_id'))
-
+def add_token_to_blacklist(token_id):
+    TokenBlackList.create(id=token_id)
     return True
 
 
-def is_token_in_blacklist(token):
-    payload = get_payload(token)
-
-    if not TokenBlackList.get(payload.get('token_id')):
-        return False
-    
+def is_token_in_blacklist(token_id):
+    if TokenBlackList.get(token_id):
+        raise InvalidToken("Invalid token")
     return True

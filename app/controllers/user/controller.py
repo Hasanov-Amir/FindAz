@@ -1,31 +1,26 @@
 from flask import request
 from marshmallow import ValidationError
 
-from .serializer import UserSerializer
+from .serializer import (
+    UserSerializer,
+    UserPasswordChangeSerializer
+)
 from app.data.models import User
 from app.utils.jwtutil import (
     add_token_to_blacklist,
     create_tokens,
-    token_is_valid,
-    get_payload,
 )
-from app.data.models import User
+from app.utils.helpers import create_hash
+from app.exceptions.auth import (
+    InvalidCredentials,
+    InvalidPassword,
+    PasswordsDismatch
+)
 
 
 def get_user():
-    auth_header = request.headers.get('Authorization')
-
-    if auth_header and auth_header.startswith('Bearer '):
-        token = auth_header.split(' ')[1]
-
-    if not token_is_valid(token):
-        error = {
-            'error': 'Invalid token.'
-        }
-        return error, 400
-    
-    payload = get_payload(token)
-    return payload, 200
+    user = request.environ.get('user')
+    return user, 200
 
 
 def create_user():
@@ -54,60 +49,69 @@ def login_user():
     try:
         user = User.filter(email=validated_data.get('email'))[0]
     except IndexError:
-        error = {
-            'error': 'Invalid login credentials.'
-        }
-        return error, 400
+        raise InvalidCredentials("Invalid credentials")
     
     user_data = user_schema.dump(user)
-
-    if not user:
-        error = {
-            'error': 'Invalid login credentials.'
-        }
-        return error, 400
     
     if not user.check_password(validated_data.get('password')):
-        error = {
-            'error': 'Invalid password.'
-        }
-        return error, 400
+        raise InvalidPassword("Invalid password")
 
     response = create_tokens(user_data)
     return response, 200
 
 
 def logout_user():
-    auth_header = request.headers.get('Authorization')
-
-    if auth_header and auth_header.startswith('Bearer '):
-        refresh_token = auth_header.split(' ')[1]
-
-    if not add_token_to_blacklist(refresh_token):
-        error = {
-            'error': 'Invalid token'
-        }
-        return error, 400
+    user = request.environ.get('user')
+    add_token_to_blacklist(user.get('token_id'))
     return {}, 204
 
 
 def refresh_access_token():
-    auth_header = request.headers.get('Authorization')
+    user = request.environ.get('user')
     user_schema = UserSerializer()
 
-    if auth_header and auth_header.startswith('Bearer '):
-        refresh_token = auth_header.split(' ')[1]
+    add_token_to_blacklist(user.get('token_id'))
+    user = User.get(user.get('id'))
 
-    if not token_is_valid(refresh_token, token_type='refresh'):
-        error = {
-            'error': 'Invalid token.'
-        }
-        return error, 400
-
-    payload = get_payload(refresh_token)
-    add_token_to_blacklist(refresh_token)
-    
-    user = User.get(payload.get('id'))
     user_data = user_schema.dump(user)
     response = create_tokens(user_data)
     return response, 200
+
+
+def change_password():
+    data = request.json()
+    user = request.environ.get('user')
+    pass_schema = UserPasswordChangeSerializer()
+
+    try:
+        validated_data = pass_schema.load(data)
+    except ValidationError as error:
+        return {"error": error.messages}, 400
+
+    user_obj = User.get(user.get('id'))
+    user_obj.check_password(validated_data.get('old_password'))
+
+    if validated_data.get('new_password1') != \
+       validated_data.get('new_password2'):
+        raise PasswordsDismatch("Passwords dismatch")
+
+    hashed_password = create_hash(validated_data.get('new_password1'))
+    user_obj.update(password=hashed_password)
+    return {}, 204
+
+
+def change_user_info():
+    data = request.json()
+    user = request.environ.get('user')
+    user_schema = UserSerializer(method="PUT")
+
+    try:
+        validated_data = user_schema.load(data)
+    except ValidationError as error:
+        return {"error": error.messages}, 400
+    
+    user_obj = User.get(user.get('id'))
+    updated_user = user_obj.update(**validated_data)
+    updated_user_data = user_schema.dump(updated_user)
+
+    return updated_user_data, 200
