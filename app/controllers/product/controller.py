@@ -21,7 +21,6 @@ def add_product():
     
     product = Product.create(**validated_data)
     response = product_schema.dump(product)
-
     return response, 201
 
 
@@ -38,7 +37,6 @@ def get_product(id):
         return {"error": "Product not found"}, 404
     
     response = product_schema.dump(product)
-
     return response, 200
 
 
@@ -72,7 +70,6 @@ def change_product(id):
     
     ready_product = product.update(**validated_data)
     response = product_schema.dump(ready_product)
-
     return response, 200
 
 
@@ -109,7 +106,6 @@ def change_product_images(id):
     p_images.update(images)
     flag_modified(product, "product_images") # никто не знает почему но это работает
     product.update(product_images=p_images)
-
     return images, 200
 
 
@@ -132,14 +128,13 @@ def delete_product_images(id, field):
     image_filename = product_images.get(field, False)
 
     if not image_filename:
-        return {"error": f"product_images field doe not have {field} field."}
+        return {"error": f"product_images field does not have {field} field."}
 
     product_images.pop(field)
     flag_modified(product, "product_images")
     product.save()
     
     os.remove(f"{current_app.config['MEDIA_PATH']}\\{image_filename}")
-
     return {}, 204
 
 
@@ -155,5 +150,4 @@ def delete_product(id):
         return {"error": "Product not found"}, 404
 
     product.delete()
-
     return {}, 204

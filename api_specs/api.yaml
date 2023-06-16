@@ -4,14 +4,16 @@ info:
   title: FindAz
   version: "1.2"
   description: just for fun marketplace like yandex market, aliexpress and etc
+  contact:
+    name: Hasanov Amir
 
 tags:
   - name: User
-    description: Endpoint for Users
+    description: endpoints for users
   - name: Product
-    description: Endpoints for Products
+    description: endpoints for products
   - name: Image
-    description: Endpoint for Images
+    description: endpoint for images
 
 servers:
   - url: http://127.0.0.1:8080
@@ -23,14 +25,16 @@ paths:
       operationId: "app.controllers.get_image"
       tags:
         - Image
-      summary: get Image by filename
+      summary: endpoint for getting images by filename
+
       parameters:
         - name: file
           in: path
-          description: filename of image
+          description: path parametre for filename of image
           schema:
             type: string
           required: true
+
       responses:
         200:
           description: returns image file
@@ -56,35 +60,40 @@ paths:
     delete:
       operationId: "app.controllers.product.controller.delete_product"
       tags:
-        - Products
-      summary: Delete product by id
+        - Product
+      summary: endpoint for deleting product by id
+
       parameters:
         - name: id
           in: path
-          description: product id
+          description: path parametre for product id
           schema:
             type: string
             format: uuid
           required: true
+
       responses:
         204:
           description: No Content
+
     get:
       operationId: "app.controllers.product.controller.get_product"
       tags:
-        - Products
-      summary: Get product by id
+        - Product
+      summary: endpoint for getting product by id
+
       parameters:
         - name: id
           in: path
-          description: product id
+          description: path parametre for product id
           schema:
             type: string
             format: uuid
           required: true
+
       responses:
         200:
-          description: info about product
+          description: returns info about product
           content:
             application/json:
               schema:
@@ -93,12 +102,13 @@ paths:
     put:
       operationId: "app.controllers.product.controller.change_product"
       tags:
-        - Products
-      summary: Change product by id
+        - Product
+      summary: endpoint for changing product by id
+
       parameters:
         - name: id
           in: path
-          description: product id
+          description: path parametre for product id
           schema:
             type: string
             format: uuid
@@ -108,9 +118,10 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/productRequestBodySchema"
+
       responses:
         200:
-          description: update info about product
+          description: returns updated info about product
           content:
             application/json:
               schema:
@@ -120,8 +131,8 @@ paths:
     put:
       operationId: "app.controllers.product.controller.change_product_images"
       tags:
-        - Products
-      summary: Set or change product images
+        - Product
+      summary: endpoint for adding or changing product images
 
       parameters:
         - name: id
@@ -139,7 +150,7 @@ paths:
 
       responses:
         200:
-          description: returns josn with images url
+          description: returns json with images url
           content:
             application/json:
               schema:
@@ -152,18 +163,20 @@ paths:
     delete:
       operationId: "app.controllers.product.controller.delete_product_images"
       tags:
-        - "Products"
-      summary: Delete product images
+        - Product
+      summary: endpoint for deleting product image
 
       parameters:
         - name: id
           in: path
+          description: path parametre for product id
           schema:
             type: string
             format: uuid
           required: true
         - name: field
           in: path
+          description: path parametre for image filename
           schema:
             type: string
           required: true
@@ -176,24 +189,29 @@ paths:
     get:
       operationId: "app.controllers.product.controller.get_products"
       tags:
-        - Products
-      summary: Get list of products
+        - Product
+      summary: endpoint for getting list of products
+
       parameters:
         - in: query
           name: product_title
+          description: query parametre for product title
           schema:
             type: string
         - in: query
           name: product_owner
+          description: query parametre for product owner
           schema:
             type: string
         - in: query
           name: product_count
+          description: query parametre for product count
           schema:
             type: integer
+
       responses:
         200:
-          description: info about products
+          description: returns info about products
           content:
             application/json:
               schema:
@@ -204,10 +222,11 @@ paths:
     post:
       operationId: "app.controllers.product.controller.add_product"
       tags:
-        - Products
-      summary: Add new product
+        - Product
+      summary: endpoint for creating new product
+
       requestBody:
-        description: add new product
+        description: required fields for creating new product
         required: true
         content:
           application/json:
@@ -216,7 +235,7 @@ paths:
 
       responses:
         201:
-          description: new product was added
+          description: returns new product info
           content:
             application/json:
               schema:
@@ -226,11 +245,11 @@ paths:
     post:
       operationId: "app.controllers.user.controller.create_user"
       tags:
-        - "User"
-      summary: Create new user
+        - User
+      summary: endpoint for creating new user
 
       requestBody:
-        description: add new user
+        description: req fields for creating new user
         required: true
         content:
           application/json:
@@ -239,7 +258,7 @@ paths:
 
       responses:
         201:
-          description: User was successfully created
+          description: returns new user info
           content:
             application/json:
               schema:
@@ -249,11 +268,11 @@ paths:
     post:
       operationId: "app.controllers.user.controller.login_user"
       tags:
-        - "User"
-      summary: Login user by email and password
+        - User
+      summary: endpoint for login user
 
       requestBody:
-        description: login by email and password
+        description: required fields for login user
         required: true
         content:
           application/json:
@@ -281,15 +300,53 @@ paths:
     get:
       operationId: "app.controllers.user.controller.get_user"
       tags:
-        - "User"
-      summary: Get info about logged in user
+        - User
+      summary: endpoint for getting current user info
 
       parameters:
         - $ref: "#/components/parameters/loginRequiredComponent"
 
       responses:
         200:
-          description: get info about user
+          description: returns current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userGetSchema"
+
+    put:
+      operationId: "app.controllers.user.controller.change_user_info"
+      tags:
+        - User
+      summary: endpoint for changing user info
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        description: available fields for changing
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                age:
+                  type: integer
+                gender:
+                  type: string
+
+      responses:
+        200:
+          description: returns changed user info
           content:
             application/json:
               schema:
@@ -299,7 +356,7 @@ paths:
     get:
       operationId: "app.controllers.user.controller.refresh_access_token"
       tags:
-        - "User"
+        - User
       summary: endpoint for refreshing access token
 
       parameters:
@@ -307,7 +364,7 @@ paths:
 
       responses:
         200:
-          description: get updated tokens
+          description: get updated tokens (including refresh token)
           content:
             application/json:
               schema:
@@ -317,8 +374,8 @@ paths:
     get:
       operationId: "app.controllers.user.controller.logout_user"
       tags:
-        - "User"
-      summary: endpoint for logout
+        - User
+      summary: endpoint for logout user
 
       parameters:
         - $ref: "#/components/parameters/loginRequiredComponent"
@@ -326,19 +383,19 @@ paths:
       responses:
         204:
           description: No Content
-  
+
   /api/user/change-password:
     post:
       operationId: "app.controllers.user.controller.change_password"
       tags:
-        - "User"
+        - User
       summary: endpoint for changing password
 
       parameters:
-        - $ref: '#/components/parameters/loginRequiredComponent'
+        - $ref: "#/components/parameters/loginRequiredComponent"
 
       requestBody:
-        description: new and old passwords
+        description: required fields for changing user password
         required: true
         content:
           application/json:
@@ -351,7 +408,59 @@ paths:
                   type: string
                 new_password2:
                   type: string
-      
+
+      responses:
+        204:
+          description: No content
+
+  /api/user/me/profile-photo:
+    put:
+      operationId: "app.controllers.user.controller.set_user_profile_photo"
+      tags:
+        - User
+      summary: endpoint for adding or changing user profile photo
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profile_photo:
+                  type: string
+                  format: binary
+              required:
+                - "profile_photo"
+
+      responses:
+        200:
+          description: returns json with profile photo url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile_photo:
+                    type: string
+
+  /api/user/me/profile-photo/{filename}:
+    delete:
+      operationId: "app.controllers.user.controller.delete_user_profile_photo"
+      tags:
+        - User
+      summary: endpoint for deleting user profile photo
+
+      parameters:
+        - name: filename
+          in: path
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
       responses:
         204:
           description: No content
@@ -363,8 +472,9 @@ components:
       in: header
       schema:
         type: string
+        pattern: '^Bearer .*$'
       required: true
-      description: paremetre for private endpoints
+      description: header parametre for private endpoints
 
   schemas:
     tokensSchema:

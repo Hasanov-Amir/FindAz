@@ -1,8 +1,13 @@
-from flask import request
+import os
+import uuid
+
+from flask import current_app, request
+from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
 from .serializer import (
     UserSerializer,
+    UserProfilePhotoSerializer,
     UserPasswordChangeSerializer
 )
 from app.data.models import User
@@ -115,3 +120,38 @@ def change_user_info():
     updated_user_data = user_schema.dump(updated_user)
 
     return updated_user_data, 200
+
+
+def set_user_profile_photo():
+    user = request.environ.get('user')
+    data = {'profile_photo': request.files['profile_photo']}
+    profile_photo_schema = UserProfilePhotoSerializer()
+
+    try:
+        validated_data = profile_photo_schema.load(data)
+    except ValidationError as error:
+        return {"error": error.messages}, 400
+    
+    profile_photo = validated_data.get('profile_photo')
+    filename = profile_photo.filename
+    filename = f"{uuid.uuid4()}.{filename.rsplit('.', 1)[1].lower()}"
+    filename = secure_filename(filename)
+    profile_photo.save(f"{current_app.config['MEDIA_PATH']}\\{filename}")
+    
+    user_obj = User.get(user.get('id'))
+    user_obj.update(profile_photo=filename)
+
+    return {"profile_photo": filename}, 200
+
+
+def delete_user_profile_photo(filename):
+    user = request.environ.get('user')
+    
+    if user.get('profile_photo') != filename:
+        return {"error": "Image not found"}, 400
+    
+    user_obj = User.get(user.get('id'))
+    user_obj.update(profile_photo='')
+
+    os.remove(f"{current_app.config['MEDIA_PATH']}\\{filename}")
+    return {}, 204

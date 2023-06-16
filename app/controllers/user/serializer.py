@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from core.extensions import ma
-from app.utils.field_types import PasswordType
+from app.utils.field_types import PasswordType, FileType
 
 
 class UserSerializer(ma.Schema):
@@ -26,6 +26,10 @@ class UserSerializer(ma.Schema):
         if method == "PUT":
             self.fields['email'].required = False
             self.fields['email'].dump_only = True
+
+
+class UserProfilePhotoSerializer(ma.Schema):
+    profile_photo = FileType(required=True)
 
 
 class UserPasswordChangeSerializer(ma.Schema):
