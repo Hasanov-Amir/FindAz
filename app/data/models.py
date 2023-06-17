@@ -1,5 +1,6 @@
 from sqlalchemy import String, Integer, SmallInteger
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.dialects.postgresql import JSON, UUID, ARRAY
 
 from database.base import Model, Column
 from app.utils.helpers import create_hash
@@ -55,6 +56,15 @@ class User(Model):
 
 class TokenBlackList(Model):
     __tablename__ = "token_black_list"
+
+
+class Shop(Model):
+    __tablename__ = "shop"
+
+    shop_title = Column("shop_title", String(50))
+    shop_owner_id = Column("shop_owner_id", UUID(as_uuid=True), unique=True, index=True)
+    shop_photo = Column("shop_photo", String(50))
+    shop_tags = Column("shop_tags", MutableList.as_mutable(ARRAY(String, dimensions=6)))
 
     def __str__(self):
         return f"id = {self.id}"

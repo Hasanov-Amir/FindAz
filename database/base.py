@@ -51,3 +51,9 @@ class Model(db.Model, CRUDMixin):
     def exists(cls, ent_id):
         result = cls.query.get(ent_id)
         return result is not None
+    
+    def __str__(self):
+        return f"id = {self.id}"
+    
+    def __repr__(self):
+        return f"id = {self.id}"
