@@ -12,6 +12,8 @@ tags:
     description: endpoints for users
   - name: Product
     description: endpoints for products
+  - name: Shop
+    description: endpoints for shops
   - name: Image
     description: endpoint for images
 

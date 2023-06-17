@@ -2,7 +2,6 @@ import json
 
 from werkzeug.wrappers import Request, Response
 
-from app.data.models import User
 from app.utils.jwtutil import token_is_valid, decode_token
 from app.exceptions.auth import (
     InvalidToken,
