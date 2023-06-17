@@ -1,6 +1,5 @@
-venv/
+.venv/
 .env
-app/media/
+logs/
 __pycache__/
-*.py[cod]
-.idea/
+core/settings/keys/

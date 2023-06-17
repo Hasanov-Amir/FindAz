@@ -1,0 +1,609 @@
+openapi: 3.0.2
+
+info:
+  title: FindAz
+  version: "1.2"
+  description: just for fun marketplace like yandex market, aliexpress and etc
+  contact:
+    name: Hasanov Amir
+
+tags:
+  - name: User
+    description: endpoints for users
+  - name: Product
+    description: endpoints for products
+  - name: Image
+    description: endpoint for images
+
+servers:
+  - url: http://127.0.0.1:8080
+    description: local server only for development
+
+paths:
+  /{file}:
+    get:
+      operationId: "app.controllers.get_image"
+      tags:
+        - Image
+      summary: endpoint for getting images by filename
+
+      parameters:
+        - name: file
+          in: path
+          description: path parametre for filename of image
+          schema:
+            type: string
+          required: true
+
+      responses:
+        200:
+          description: returns image file
+          content:
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+
+  /api/product/{id}:
+    delete:
+      operationId: "app.controllers.product.controller.delete_product"
+      tags:
+        - Product
+      summary: endpoint for deleting product by id
+
+      parameters:
+        - name: id
+          in: path
+          description: path parametre for product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+
+      responses:
+        204:
+          description: No Content
+
+    get:
+      operationId: "app.controllers.product.controller.get_product"
+      tags:
+        - Product
+      summary: endpoint for getting product by id
+
+      parameters:
+        - name: id
+          in: path
+          description: path parametre for product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+
+      responses:
+        200:
+          description: returns info about product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponseSchema"
+
+    put:
+      operationId: "app.controllers.product.controller.change_product"
+      tags:
+        - Product
+      summary: endpoint for changing product by id
+
+      parameters:
+        - name: id
+          in: path
+          description: path parametre for product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/productRequestBodySchema"
+
+      responses:
+        200:
+          description: returns updated info about product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponseSchema"
+
+  /api/product/{id}/images:
+    put:
+      operationId: "app.controllers.product.controller.change_product_images"
+      tags:
+        - Product
+      summary: endpoint for adding or changing product images
+
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            format: uuid
+          required: true
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/productImagesSchema"
+
+      responses:
+        200:
+          description: returns json with images url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    $ref: "#/components/schemas/productImagesSchema"
+
+  /api/product/{id}/images/{field}:
+    delete:
+      operationId: "app.controllers.product.controller.delete_product_images"
+      tags:
+        - Product
+      summary: endpoint for deleting product image
+
+      parameters:
+        - name: id
+          in: path
+          description: path parametre for product id
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: field
+          in: path
+          description: path parametre for image filename
+          schema:
+            type: string
+          required: true
+
+      responses:
+        204:
+          description: No Content
+
+  /api/product:
+    get:
+      operationId: "app.controllers.product.controller.get_products"
+      tags:
+        - Product
+      summary: endpoint for getting list of products
+
+      parameters:
+        - in: query
+          name: product_title
+          description: query parametre for product title
+          schema:
+            type: string
+        - in: query
+          name: product_owner
+          description: query parametre for product owner
+          schema:
+            type: string
+        - in: query
+          name: product_count
+          description: query parametre for product count
+          schema:
+            type: integer
+
+      responses:
+        200:
+          description: returns info about products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/productResponseSchema"
+
+    post:
+      operationId: "app.controllers.product.controller.add_product"
+      tags:
+        - Product
+      summary: endpoint for creating new product
+
+      requestBody:
+        description: required fields for creating new product
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/productRequestBodySchema"
+
+      responses:
+        201:
+          description: returns new product info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/productResponseSchema"
+
+  /api/user/create:
+    post:
+      operationId: "app.controllers.user.controller.create_user"
+      tags:
+        - User
+      summary: endpoint for creating new user
+
+      requestBody:
+        description: req fields for creating new user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/userCreateSchema"
+
+      responses:
+        201:
+          description: returns new user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userGetSchema"
+
+  /api/user/login:
+    post:
+      operationId: "app.controllers.user.controller.login_user"
+      tags:
+        - User
+      summary: endpoint for login user
+
+      requestBody:
+        description: required fields for login user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - "email"
+                - "password"
+
+      responses:
+        200:
+          description: returns tokens
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokensSchema"
+
+  /api/user/me:
+    get:
+      operationId: "app.controllers.user.controller.get_user"
+      tags:
+        - User
+      summary: endpoint for getting current user info
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        200:
+          description: returns current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userGetSchema"
+
+    put:
+      operationId: "app.controllers.user.controller.change_user_info"
+      tags:
+        - User
+      summary: endpoint for changing user info
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        description: available fields for changing
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                age:
+                  type: integer
+                gender:
+                  type: string
+
+      responses:
+        200:
+          description: returns changed user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userGetSchema"
+
+  /api/user/token/refresh:
+    get:
+      operationId: "app.controllers.user.controller.refresh_access_token"
+      tags:
+        - User
+      summary: endpoint for refreshing access token
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        200:
+          description: get updated tokens (including refresh token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tokensSchema"
+
+  /api/user/logout:
+    get:
+      operationId: "app.controllers.user.controller.logout_user"
+      tags:
+        - User
+      summary: endpoint for logout user
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        204:
+          description: No Content
+
+  /api/user/change-password:
+    post:
+      operationId: "app.controllers.user.controller.change_password"
+      tags:
+        - User
+      summary: endpoint for changing password
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        description: required fields for changing user password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                new_password1:
+                  type: string
+                new_password2:
+                  type: string
+
+      responses:
+        204:
+          description: No content
+
+  /api/user/me/profile-photo:
+    put:
+      operationId: "app.controllers.user.controller.set_user_profile_photo"
+      tags:
+        - User
+      summary: endpoint for adding or changing user profile photo
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profile_photo:
+                  type: string
+                  format: binary
+              required:
+                - "profile_photo"
+
+      responses:
+        200:
+          description: returns json with profile photo url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile_photo:
+                    type: string
+
+  /api/user/me/profile-photo/{filename}:
+    delete:
+      operationId: "app.controllers.user.controller.delete_user_profile_photo"
+      tags:
+        - User
+      summary: endpoint for deleting user profile photo
+
+      parameters:
+        - name: filename
+          in: path
+          schema:
+            type: string
+          required: true
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        204:
+          description: No content
+
+components:
+  parameters:
+    loginRequiredComponent:
+      name: Authorization
+      in: header
+      schema:
+        type: string
+        pattern: '^Bearer .*$'
+      required: true
+      description: header parametre for private endpoints
+
+  schemas:
+    tokensSchema:
+      type: object
+      properties:
+        access_token:
+          type: string
+        resfresh_token:
+          type: string
+
+    userCreateSchema:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        password:
+          type: string
+      required:
+        - "username"
+        - "email"
+        - "password"
+
+    userGetSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        create_date:
+          type: string
+          format: date-time
+        edit_date:
+          type: string
+          format: date-time
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: integer
+        gender:
+          type: string
+        profile_photo:
+          type: string
+
+    productResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        create_date:
+          type: string
+          format: date-time
+        edit_date:
+          type: string
+          format: date-time
+        product_title:
+          type: string
+        product_owner:
+          type: string
+        product_count:
+          type: integer
+        product_properties:
+          type: object
+          additionalProperties: true
+
+    productRequestBodySchema:
+      type: object
+      properties:
+        product_title:
+          type: string
+        product_owner:
+          type: string
+        product_count:
+          type: integer
+        product_properties:
+          type: object
+          additionalProperties: true
+
+    productImagesSchema:
+      type: object
+      properties:
+        main_image:
+          type: string
+          format: binary
+        image_1:
+          type: string
+          format: binary
+        image_2:
+          type: string
+          format: binary
+        image_3:
+          type: string
+          format: binary
+        image_4:
+          type: string
+          format: binary
+        image_5:
+          type: string
+          format: binary
+        image_6:
+          type: string
+          format: binary
+        image_7:
+          type: string
+          format: binary
+        image_8:
+          type: string
+          format: binary
+        image_9:
+          type: string
+          format: binary
+        image_10:
+          type: string
+          format: binary
