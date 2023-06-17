@@ -19,8 +19,8 @@ class JSONHTTPException(HTTPException):
             headers=self.get_headers()
         )
 
-    def get_body(self, environ=None, *args):
+    def get_body(self, *args):
         return json.dumps({"error": self.description})
 
-    def get_headers(self, environ=None, *args):
+    def get_headers(self, *args):
         return [("Content-Type", "application/json")]

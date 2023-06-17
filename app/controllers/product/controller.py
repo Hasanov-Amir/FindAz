@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
 from app.data.models import Product
+from app.utils.helpers import valid_uuid
+from app.exceptions.product import ProductNotFound
 from .serializer import ProductSerializer, ProductImagesSerializer
 
 
@@ -25,16 +27,13 @@ def add_product():
 
 
 def get_product(id):
-    try:
-        product_id = uuid.UUID(id)
-    except ValueError:
-        return {"error": "Invalid id"}, 400
+    product_id = valid_uuid(id)
     
     product = Product.get(product_id)
     product_schema = ProductSerializer()
 
     if not product:
-        return {"error": "Product not found"}, 404
+        raise ProductNotFound("Product not found")
     
     response = product_schema.dump(product)
     return response, 200
@@ -50,23 +49,18 @@ def get_products():
 def change_product(id):
     data = request.json
     request_method = request.method
-    product_schema = ProductSerializer()
-    product_put_schema = ProductSerializer(method=request_method)
-
-    try:
-        product_id = uuid.UUID(id)
-    except ValueError:
-        return {"error": "Invalid id"}, 400
+    product_schema = ProductSerializer(method=request_method)
+    product_id = valid_uuid(id)
     
     try:
-        validated_data = product_put_schema.load(data)
+        validated_data = product_schema.load(data)
     except ValidationError as error:
         return {"error": error.messages}, 400
     
     product = Product.get(product_id)
 
     if not product:
-        return {"error": "Product not found"}, 404
+        raise ProductNotFound("Product not found")
     
     ready_product = product.update(**validated_data)
     response = product_schema.dump(ready_product)
@@ -76,30 +70,23 @@ def change_product(id):
 def change_product_images(id):
     images = {file: request.files[file] for file in request.files}
     images_schema = ProductImagesSerializer()
+    product_id = valid_uuid(id)
 
     try:
         images_schema.load(images)
     except ValidationError as error:
         return {"error": error.messages}, 400
 
-    try:
-        product_id = uuid.UUID(id)
-    except ValueError:
-        return {"error": "Invalid id"}, 400
-
     product = Product.get(product_id)
 
     if not product:
-        error = f"Product not found."
-        return {"error": error}, 404
+        raise ProductNotFound("Product not found")
 
     for key, image in images.items():
         filename = image.filename
-        
         filename = f"{uuid.uuid4()}.{filename.rsplit('.', 1)[1].lower()}"
         filename = secure_filename(filename)
         image.save(f"{current_app.config['MEDIA_PATH']}\\{filename}")
-
         images[key] = filename
 
     p_images = product.product_images or {}
@@ -110,15 +97,11 @@ def change_product_images(id):
 
 
 def delete_product_images(id, field):
-    try:
-        product_id = uuid.UUID(id)
-    except ValueError:
-        return {"error": "Invalid id"}, 400
-    
+    product_id = valid_uuid(id)
     product = Product.get(product_id)
 
     if not product:
-        return {"error": "Product not found"}, 404
+        raise ProductNotFound("Product not found")
     
     product_images = product.product_images
     
@@ -128,7 +111,7 @@ def delete_product_images(id, field):
     image_filename = product_images.get(field, False)
 
     if not image_filename:
-        return {"error": f"product_images field does not have {field} field."}
+        return {"error": f"product_images field does not have {field} field."}, 400
 
     product_images.pop(field)
     flag_modified(product, "product_images")
@@ -139,15 +122,11 @@ def delete_product_images(id, field):
 
 
 def delete_product(id):
-    try:
-        product_id = uuid.UUID(id)
-    except ValueError:
-        return {"error": "Invalid id"}, 400
-
+    product_id = valid_uuid(id)
     product = Product.get(product_id)
 
     if not product:
-        return {"error": "Product not found"}, 404
+        raise ProductNotFound("Product not found")
 
     product.delete()
     return {}, 204

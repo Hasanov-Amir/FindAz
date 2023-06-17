@@ -1,12 +1,19 @@
 import hmac
+import uuid
 import base64
 import hashlib
 
 from flask import current_app
 
+from app.exceptions.product import InvalidID
+
 
 def valid_uuid(id):
-    return True
+    try:
+        id = uuid.UUID(id)
+    except ValueError:
+        raise InvalidID("Invalid ID")
+    return id
 
 
 def allowed_extension(filename):
@@ -21,4 +28,3 @@ def create_hash(raw_string):
     ).digest()
     hash_string = base64.b64encode(hash_string).decode()
     return hash_string
-
