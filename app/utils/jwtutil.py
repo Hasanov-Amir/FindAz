@@ -11,14 +11,22 @@ from app.exceptions.auth import ExpiredToken, InvalidToken, InvalidTokenType
 
 
 def create_token(payload):
-    raw_token = jwt.encode(payload, current_app.config['PRIVATE_KEY'], algorithm='RS256')
+    raw_token = jwt.encode(
+        payload,
+        current_app.config['PRIVATE_KEY'],
+        algorithm='RS256'
+    )
     encrypted_token = base64.b64encode(bytes(raw_token, 'utf-8')).decode()
     return encrypted_token
 
 
 def decode_token(encrypted_token):
     raw_token = base64.b64decode(encrypted_token).decode()
-    payload = jwt.decode(raw_token, current_app.config['PUBLIC_KEY'], algorithms='RS256')
+    payload = jwt.decode(
+        raw_token,
+        current_app.config['PUBLIC_KEY'],
+        algorithms='RS256'
+    )
     return payload
 
 

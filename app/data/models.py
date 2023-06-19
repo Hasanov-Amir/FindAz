@@ -64,7 +64,7 @@ class Shop(Model):
     shop_title = Column("shop_title", String(50))
     shop_owner_id = Column("shop_owner_id", UUID(as_uuid=True), unique=True, index=True)
     shop_photo = Column("shop_photo", String(50))
-    shop_tags = Column("shop_tags", MutableList.as_mutable(ARRAY(String, dimensions=6)))
+    shop_tags = Column("shop_tags", MutableList.as_mutable(ARRAY(String)))
 
     def __str__(self):
         return f"id = {self.id}"
