@@ -493,6 +493,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/shopResponseSchema"
 
+  /api/shop/{id}:
+    get:
+      operationId: "app.controllers.shop.controller.get_shop"
+      tags:
+        - Shop
+      summary: endpoint for getting shop info
+
+      responses:
+          200:
+            description: returns shop info
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/shopResponseSchema"
+
 components:
   parameters:
     loginRequiredComponent:
