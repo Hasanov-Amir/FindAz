@@ -10,7 +10,7 @@ from app.controllers.shop.serializer import (
 
 def create_shop():
     user = request.environ.get('user')
-    data = request.json()
+    data = request.json
     shop_schema = ShopSerializer()
 
     try:
@@ -18,7 +18,12 @@ def create_shop():
     except ValidationError as error:
         return {"error": error.messages}, 400
     
-    return
+    validated_data['shop_owner_id'] = user.get('id')
+    print(data)
+    print(validated_data)
+    # shop = Shop.create(**validated_data)
+    # response = shop_schema.dump(shop)
+    return {}, 204
 
 
 def get_shop(id):

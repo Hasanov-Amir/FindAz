@@ -251,7 +251,7 @@ paths:
       summary: endpoint for creating new user
 
       requestBody:
-        description: req fields for creating new user
+        description: required fields for creating new user
         required: true
         content:
           application/json:
@@ -467,6 +467,32 @@ paths:
         204:
           description: No content
 
+  /api/shop:
+    post:
+      operationId: "app.controllers.shop.controller.create_shop"
+      tags:
+        - Shop
+      summary: endpoint for creating shop
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        description: required fields for creating shop
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shopCreateSchema"
+
+      responses:
+        200:
+          description: returns shop info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shopResponseSchema"
+
 components:
   parameters:
     loginRequiredComponent:
@@ -479,6 +505,46 @@ components:
       description: header parametre for private endpoints
 
   schemas:
+    shopResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        create_date:
+          type: string
+          format: date-time
+        edit_date:
+          type: string
+          format: date-time
+        shop_title:
+          type: string
+        shop_owner_id:
+          type: string
+          format: uuid
+        shop_photo:
+          type: string
+        shop_tags:
+          type: array
+          items:
+            type: string
+          minItems: 6
+          maxItems: 6
+          
+    shopCreateSchema:
+      type: object
+      properties:
+        shop_title:
+          type: string
+        shop_tags:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 6
+      required:
+        - "shop_title"
+
     tokensSchema:
       type: object
       properties:
