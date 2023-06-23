@@ -10,11 +10,11 @@ from app.exceptions.auth import InvalidPassword
 class Product(Model):
     __tablename__ = "product"
 
-    product_title = Column("title", String(30))
-    product_owner = Column("owner", String(50))
-    product_count = Column("count", Integer())
-    product_properties = Column("properties", JSON)
-    product_images = Column("images", JSON)
+    product_title = Column("product_title", String(30))
+    product_owner = Column("product_owner", UUID(as_uuid=True))
+    product_count = Column("product_count", Integer())
+    product_properties = Column("product_properties", JSON)
+    product_images = Column("product_images", JSON)
 
     def __str__(self):
         return f"{self.id} : {self.product_title}"

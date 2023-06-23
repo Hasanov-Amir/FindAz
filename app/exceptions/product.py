@@ -9,3 +9,13 @@ class InvalidID(JSONHTTPException):
 class ProductNotFound(JSONHTTPException):
     code = 404
     description = "Product not found"
+
+
+class ProductImageFieldNotFound(JSONHTTPException):
+    code = 404
+    description = "Product does not have product_images field"
+
+
+class ProductImageKeyFieldNotFound(JSONHTTPException):
+    code = 404
+    description = "product_images field does not have this field"

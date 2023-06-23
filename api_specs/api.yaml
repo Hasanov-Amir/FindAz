@@ -468,6 +468,22 @@ paths:
           description: No content
 
   /api/shop:
+    get:
+      operationId: "app.controllers.shop.controller.get_shops"
+      tags:
+        - Shop
+      summary: endpoint for getting list of shops
+
+      responses:
+        200:
+          description: returns list of shops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/shopResponseSchema"
+
     post:
       operationId: "app.controllers.shop.controller.create_shop"
       tags:
@@ -507,6 +523,91 @@ paths:
               application/json:
                 schema:
                   $ref: "#/components/schemas/shopResponseSchema"
+
+    put:
+      operationId: "app.controllers.shop.controller.change_shop"
+      tags:
+        - Shop
+      summary: endpoint for change shop info
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        description: required fields for updating shop info
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shopCreateSchema"
+      
+      responses:
+        200:
+          description: returns updated shop info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shopResponseSchema"
+
+    delete:
+      operationId: "app.controllers.shop.controller.delete_shop"
+      tags:
+        - Shop
+      summary: endpoint for deleting shop
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        204:
+          description: No content
+
+  /api/shop/{id}/images:
+    put:
+      operationId: "app.controllers.shop.controller.set_shop_photo"
+      tags:
+        - Shop
+      summary: endpoint for adding shop photo
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                shop_photo:
+                  type: string
+                  format: binary
+              required:
+                - "shop_photo"
+      
+      responses:
+        200:
+          description: returns added image url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shop_photo:
+                    type: string
+
+  /api/shop/{id}/images/{filename}:
+    delete:
+      operationId: "app.controllers.shop.controller.delete_shop_photo"
+      tags:
+        - Shop
+      summary: endpoint for deleting shop photo
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
+
+      responses:
+        204:
+          description: No content
 
 components:
   parameters:
