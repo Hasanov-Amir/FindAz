@@ -15,8 +15,9 @@ class ShopSerializer(ma.Schema):
 
     def __init__(self, method=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.method = method
         
-        if method == "PUT":
+        if self.method == "PUT":
             self.fields['shop_title'].required = False
 
 

@@ -8,7 +8,11 @@ from marshmallow import ValidationError
 
 from app.data.models import Product
 from app.utils.helpers import valid_uuid
-from app.exceptions.product import ProductNotFound
+from app.exceptions.product import (
+    ProductImageFieldNotFound,
+    ProductImageKeyFieldNotFound,
+    ProductNotFound
+)
 from .serializer import ProductSerializer, ProductImagesSerializer
 
 
@@ -106,12 +110,12 @@ def delete_product_images(id, field):
     product_images = product.product_images
     
     if not product_images:
-        return {"error": "Product does not have product_images field."}, 400
+        raise ProductImageFieldNotFound("Product does not have product_images field")
     
     image_filename = product_images.get(field, False)
 
     if not image_filename:
-        return {"error": f"product_images field does not have {field} field."}, 400
+        raise ProductImageKeyFieldNotFound(f"product_images field does not have {field} field")
 
     product_images.pop(field)
     flag_modified(product, "product_images")

@@ -9,7 +9,7 @@ class ProductSerializer(ma.Schema):
     create_date = fields.DateTime(dump_only=True)
     edit_date = fields.DateTime(dump_only=True)
     product_title = fields.Str(required=True)
-    product_owner = fields.Str(required=True)
+    product_owner = fields.Str(dump_only=True)
     product_count = fields.Int(required=True)
     product_properties = fields.Dict(required=True)
     product_images = fields.Dict(dump_only=True)
@@ -19,7 +19,6 @@ class ProductSerializer(ma.Schema):
         
         if method == "PUT":
             self.fields['product_title'].required = False
-            self.fields['product_owner'].required = False
             self.fields['product_count'].required = False
             self.fields['product_properties'].required = False
 
