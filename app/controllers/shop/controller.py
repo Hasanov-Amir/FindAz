@@ -16,6 +16,7 @@ from app.exceptions.shop import (
     ShopForbidden,
     ShopPhotoNotFound
 )
+from core.extensions import db
 from app.utils.helpers import valid_uuid
 
 

@@ -12,6 +12,7 @@ class ShopSerializer(ma.Schema):
     shop_owner_id = fields.Str(dump_only=True)
     shop_photo = fields.Str(dump_only=True)
     shop_tags = fields.List(fields.Str(), required=False)
+    shop_producr_count = fields.Int(dump_only=True)
 
     def __init__(self, method=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
