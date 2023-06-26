@@ -8,8 +8,9 @@ from connexion.resolver import RestyResolver
 from flask.logging import default_handler
 
 from core.extensions import db, ma, migrator
-from app.data import models as _models
 from app.middlewares.auth import AuthMiddleware
+from app.data import models as _models
+from app.data import triggers as _triggers
 
 
 class SettingsError(Exception):

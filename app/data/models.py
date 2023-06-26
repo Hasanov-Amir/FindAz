@@ -11,7 +11,8 @@ class Product(Model):
     __tablename__ = "product"
 
     product_title = Column("product_title", String(30))
-    product_owner = Column("product_owner", UUID(as_uuid=True))
+    product_owner_shop = Column("product_owner_shop", UUID(as_uuid=True))
+    product_owner_shop_title = Column("product_owner_shop_title", String(50))
     product_count = Column("product_count", Integer())
     product_properties = Column("product_properties", JSON)
     product_images = Column("product_images", JSON)
@@ -65,6 +66,7 @@ class Shop(Model):
     shop_owner_id = Column("shop_owner_id", UUID(as_uuid=True), unique=True, index=True)
     shop_photo = Column("shop_photo", String(50))
     shop_tags = Column("shop_tags", MutableList.as_mutable(ARRAY(String)))
+    shop_producr_count = Column("shop_producr_count", SmallInteger())
 
     def __str__(self):
         return f"id = {self.id}"
