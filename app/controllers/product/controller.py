@@ -9,8 +9,8 @@ from marshmallow import ValidationError
 from app.data.models import Product
 from app.utils.helpers import valid_uuid
 from app.exceptions.product import (
-    ProductImageFieldNotFound,
     ProductImageKeyFieldNotFound,
+    ProductImageFieldNotFound,
     ProductNotFound
 )
 from .serializer import ProductSerializer, ProductImagesSerializer
@@ -32,7 +32,6 @@ def add_product():
 
 def get_product(id):
     product_id = valid_uuid(id)
-    
     product = Product.get(product_id)
     product_schema = ProductSerializer()
 

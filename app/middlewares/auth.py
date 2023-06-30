@@ -8,9 +8,7 @@ from app.exceptions.auth import (
     ExpiredToken,
     InvalidTokenType,
     AccessTokenNotFound,
-    RefreshTokenNotFound,
-    InvalidCredentials,
-    InvalidPassword
+    RefreshTokenNotFound
 )
 
 
@@ -38,9 +36,7 @@ class AuthMiddleware:
             ExpiredToken,
             InvalidTokenType,
             AccessTokenNotFound,
-            RefreshTokenNotFound,
-            InvalidCredentials,
-            InvalidPassword
+            RefreshTokenNotFound
         ) as error:
             res = Response(
                 json.dumps({"error": error.description}),
