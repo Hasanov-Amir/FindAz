@@ -19,3 +19,8 @@ class ProductImageFieldNotFound(JSONHTTPException):
 class ProductImageKeyFieldNotFound(JSONHTTPException):
     code = 404
     description = "product_images field does not have this field"
+
+
+class ProductIsNotYour(JSONHTTPException):
+    code = 403
+    description = "Product is not your"
