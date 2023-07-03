@@ -6,24 +6,33 @@ from sqlalchemy.orm.attributes import flag_modified
 from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
-from app.data.models import Product
+from app.data.models import Product, Shop
 from app.utils.helpers import valid_uuid
 from app.exceptions.product import (
     ProductImageKeyFieldNotFound,
     ProductImageFieldNotFound,
-    ProductNotFound
+    ProductNotFound,
+    ProductIsNotYour
 )
+from app.exceptions.shop import ShopNotFound
 from .serializer import ProductSerializer, ProductImagesSerializer
 
 
 def add_product():
+    user = request.environ.get('user')
     data = request.json
     product_schema = ProductSerializer()
+
+    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+        raise ShopNotFound("Shop not found")
 
     try:
         validated_data = product_schema.load(data)
     except ValidationError as error:
         return {"error": error.messages}, 400
+    
+    validated_data['product_owner_shop'] = shop.id
+    validated_data['product_owner_shop_title'] = shop.title
     
     product = Product.create(**validated_data)
     response = product_schema.dump(product)
@@ -50,40 +59,52 @@ def get_products():
 
 
 def change_product(id):
+    user = request.environ.get('user')
     data = request.json
     request_method = request.method
     product_schema = ProductSerializer(method=request_method)
     product_id = valid_uuid(id)
+    product = Product.get(product_id)
+
+    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+        raise ShopNotFound("Shop not found")
     
     try:
         validated_data = product_schema.load(data)
     except ValidationError as error:
         return {"error": error.messages}, 400
-    
-    product = Product.get(product_id)
 
     if not product:
         raise ProductNotFound("Product not found")
     
+    if product.product_owner_shop != shop.id:
+        raise ProductIsNotYour("Product is not your")
+
     ready_product = product.update(**validated_data)
     response = product_schema.dump(ready_product)
     return response, 200
 
 
 def change_product_images(id):
+    user = request.environ.get('user')
     images = {file: request.files[file] for file in request.files}
     images_schema = ProductImagesSerializer()
     product_id = valid_uuid(id)
+    product = Product.get(product_id)
+
+    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+        raise ShopNotFound("Shop not found")
 
     try:
         images_schema.load(images)
     except ValidationError as error:
         return {"error": error.messages}, 400
 
-    product = Product.get(product_id)
-
     if not product:
         raise ProductNotFound("Product not found")
+    
+    if product.product_owner_shop != shop.id:
+        raise ProductIsNotYour("Product is not your")
 
     for key, image in images.items():
         filename = image.filename
@@ -100,11 +121,18 @@ def change_product_images(id):
 
 
 def delete_product_images(id, field):
+    user = request.environ.get('user')
     product_id = valid_uuid(id)
     product = Product.get(product_id)
 
+    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+        raise ShopNotFound("Shop not found")
+
     if not product:
         raise ProductNotFound("Product not found")
+    
+    if product.product_owner_shop != shop.id:
+        raise ProductIsNotYour("Product is not your")
     
     product_images = product.product_images
     
@@ -125,11 +153,18 @@ def delete_product_images(id, field):
 
 
 def delete_product(id):
+    user = request.environ.get('user')
     product_id = valid_uuid(id)
     product = Product.get(product_id)
 
+    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+        raise ShopNotFound("Shop not found")
+
     if not product:
         raise ProductNotFound("Product not found")
+    
+    if product.product_owner_shop != shop.id:
+        raise ProductIsNotYour("Product is not your")
 
     product.delete()
     return {}, 204
