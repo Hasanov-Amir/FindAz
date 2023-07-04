@@ -2,9 +2,9 @@ import os
 import uuid
 
 from flask import request, current_app
-from sqlalchemy.orm.attributes import flag_modified
-from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
+from werkzeug.utils import secure_filename
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.data.models import Product, Shop
 from app.utils.helpers import valid_uuid
@@ -22,8 +22,9 @@ def add_product():
     user = request.environ.get('user')
     data = request.json
     product_schema = ProductSerializer()
+    shop = Shop.filter(shop_owner_id=user.get('id'))
 
-    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+    if not shop:
         raise ShopNotFound("Shop not found")
 
     try:
@@ -65,14 +66,15 @@ def change_product(id):
     product_schema = ProductSerializer(method=request_method)
     product_id = valid_uuid(id)
     product = Product.get(product_id)
-
-    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
-        raise ShopNotFound("Shop not found")
+    shop = Shop.filter(shop_owner_id=user.get('id'))
     
     try:
         validated_data = product_schema.load(data)
     except ValidationError as error:
         return {"error": error.messages}, 400
+    
+    if not shop:
+        raise ShopNotFound("Shop not found")
 
     if not product:
         raise ProductNotFound("Product not found")
@@ -91,14 +93,15 @@ def change_product_images(id):
     images_schema = ProductImagesSerializer()
     product_id = valid_uuid(id)
     product = Product.get(product_id)
-
-    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
-        raise ShopNotFound("Shop not found")
+    shop = Shop.filter(shop_owner_id=user.get('id'))
 
     try:
         images_schema.load(images)
     except ValidationError as error:
         return {"error": error.messages}, 400
+    
+    if not shop:
+        raise ShopNotFound("Shop not found")
 
     if not product:
         raise ProductNotFound("Product not found")
@@ -124,8 +127,9 @@ def delete_product_images(id, field):
     user = request.environ.get('user')
     product_id = valid_uuid(id)
     product = Product.get(product_id)
+    shop = Shop.filter(shop_owner_id=user.get('id'))
 
-    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+    if not shop:
         raise ShopNotFound("Shop not found")
 
     if not product:
@@ -156,8 +160,9 @@ def delete_product(id):
     user = request.environ.get('user')
     product_id = valid_uuid(id)
     product = Product.get(product_id)
+    shop = Shop.filter(shop_owner_id=user.get('id'))
 
-    if not (shop:=Shop.filter(shop_owner_id=user.get('id'))):
+    if not shop:
         raise ShopNotFound("Shop not found")
 
     if not product:

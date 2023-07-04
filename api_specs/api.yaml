@@ -66,6 +66,7 @@ paths:
       summary: endpoint for deleting product by id
 
       parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
         - name: id
           in: path
           description: path parametre for product id
@@ -108,6 +109,7 @@ paths:
       summary: endpoint for changing product by id
 
       parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
         - name: id
           in: path
           description: path parametre for product id
@@ -137,6 +139,7 @@ paths:
       summary: endpoint for adding or changing product images
 
       parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
         - name: id
           in: path
           schema:
@@ -169,6 +172,7 @@ paths:
       summary: endpoint for deleting product image
 
       parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
         - name: id
           in: path
           description: path parametre for product id
@@ -226,6 +230,9 @@ paths:
       tags:
         - Product
       summary: endpoint for creating new product
+
+      parameters:
+        - $ref: "#/components/parameters/loginRequiredComponent"
 
       requestBody:
         description: required fields for creating new product
