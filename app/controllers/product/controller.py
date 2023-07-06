@@ -32,8 +32,8 @@ def add_product():
     except ValidationError as error:
         return {"error": error.messages}, 400
     
-    validated_data['product_owner_shop'] = shop.id
-    validated_data['product_owner_shop_title'] = shop.title
+    validated_data['product_owner_shop'] = shop[0].id
+    validated_data['product_owner_shop_title'] = shop[0].shop_title
     
     product = Product.create(**validated_data)
     response = product_schema.dump(product)
