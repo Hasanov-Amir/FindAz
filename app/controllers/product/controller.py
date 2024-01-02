@@ -173,3 +173,13 @@ def delete_product(id):
 
     product.delete()
     return {}, 204
+
+
+def update_product_rating():
+    # TODO: update rating field of product when user press rating button
+    pass
+
+
+def create_product_comment():
+    # TODO: add comments functionality to products
+    pass

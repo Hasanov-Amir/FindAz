@@ -1,6 +1,7 @@
 from marshmallow import fields
 from app.utils.field_types import FileType
 
+from app.utils.field_types import PriceType
 from core.extensions import ma
 
 
@@ -13,7 +14,10 @@ class ProductSerializer(ma.Schema):
     product_owner_shop_title = fields.Str(dump_only=True)
     product_count = fields.Int(required=True)
     product_properties = fields.Dict(required=True)
+    product_tags = fields.List(fields.Str(), required=False)
     product_images = fields.Dict(dump_only=True)
+    product_rating = fields.Decimal(dump_only=True)
+    product_price = PriceType(required=True)
 
     def __init__(self, method=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,6 +26,7 @@ class ProductSerializer(ma.Schema):
             self.fields['product_title'].required = False
             self.fields['product_count'].required = False
             self.fields['product_properties'].required = False
+            self.fields['product_price'].required = False
 
 
 class ProductImagesSerializer(ma.Schema):

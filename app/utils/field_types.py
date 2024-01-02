@@ -38,3 +38,11 @@ class PasswordType(fields.String):
             raise ValidationError("Password can't contain whitespace symbol.")
 
         return value
+    
+
+class PriceType(fields.Decimal):
+    def _deserialize(self, value, attr, data, **kwargs):
+        value = super()._deserialize(value, attr, data, **kwargs)
+        value = round(value, 2) # TODO: fix it later
+
+        return value

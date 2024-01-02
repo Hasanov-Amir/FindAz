@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, SmallInteger
+from sqlalchemy import String, Integer, SmallInteger, DECIMAL
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.dialects.postgresql import JSON, UUID, ARRAY
 
@@ -15,7 +15,10 @@ class Product(Model):
     product_owner_shop_title = Column("product_owner_shop_title", String(50))
     product_count = Column("product_count", Integer())
     product_properties = Column("product_properties", JSON)
+    product_tags = Column("product_tags", MutableList.as_mutable(ARRAY(String)))
     product_images = Column("product_images", JSON)
+    product_rating = Column("product_rating", DECIMAL)
+    product_price = Column("product_price", DECIMAL)
 
     def __str__(self):
         return f"{self.id} : {self.product_title}"
